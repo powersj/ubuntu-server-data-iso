@@ -64,11 +64,13 @@ def main(new_url, old_url, verbose=False):
     new_sizes = get_iso_sizes(new_url)
     old_sizes = get_iso_sizes(old_url)
 
-    logging.info('ISO Size Diff')
+    logging.info('Daily ISO Size Diff')
     logging.info('---')
-    logging.info(new_url)
-    logging.info(old_url)
+    logging.info('new: %s', new_url)
+    logging.info('old: %s', old_url)
     logging.info('---')
+    logging.info('        OLD --> NEW [DIFF]')
+
     for key, new_size in new_sizes.iteritems():
         if key in old_sizes:
             old_size = old_sizes[key]
@@ -76,6 +78,7 @@ def main(new_url, old_url, verbose=False):
             if diff:
                 logging.info('%7s %3s --> %3s [%+2.1f]',
                              key, old_size, new_size, diff)
+
     logging.info('')
 
 
