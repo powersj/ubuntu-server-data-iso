@@ -113,7 +113,10 @@ def main(flavor, release=None, compare=False, verbose=False):
     if compare:
         logging.info('%s/%s %s/%s', url, matches[-1], url, matches[-2])
     else:
+        logging.info('ISO List for \'%s\'', flavor)
+        logging.info('---')
         print_report(url, matches)
+        logging.info('')
 
 
 if __name__ == '__main__':
