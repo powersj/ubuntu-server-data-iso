@@ -56,7 +56,6 @@ def main(old_url, new_url, debug=False):
     logging.info('---')
     logging.info('old: %s', old_url)
     logging.info('new: %s', new_url)
-    logging.info('---')
     logging.info('        OLD --> NEW [DIFF]')
 
     for key, new_size in new_sizes.items():

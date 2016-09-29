@@ -89,7 +89,7 @@ def set_math(old_iso, new_iso):
             updated += 1
             updated_size += (new_iso[pkg]['size'] - old_iso[pkg]['size'])
 
-    logging.info('Overall Stats')
+    logging.info('Diff Summary')
     logging.info('---')
     logging.info('Total Old:   %4s', len(old))
     logging.info('Total New:   %4s', len(new))
