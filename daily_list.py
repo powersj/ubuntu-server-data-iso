@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Outputs all available daily ISOs and specifies which is current and pending.
 
@@ -8,26 +8,14 @@ import argparse
 import logging
 import re
 import sys
-import requests
-
-
-def _request_url(url):
-    """
-    Using requests to get a specific URL.
-    """
-    result = requests.get(url)
-    if result.status_code != requests.codes.ok:
-        logging.info('[%s] error getting to URL: %s', result.status_code, url)
-        sys.exit(1)
-
-    return result.text
+from util import request_url
 
 
 def get_daily_releases(url):
     """
     From the URL get the list of releases.
     """
-    text = _request_url(url)
+    text = request_url(url)
 
     regex = r'([0-9]{8}\.*[0-9]*)'
     matches = sorted(list(set(re.findall(regex, text))))
@@ -55,9 +43,9 @@ def get_daily_iso_url(flavor, release):
                        'ubuntu-server', 'ubuntukylin', 'xenial', 'xubuntu']
 
     if flavor in daily_list:
-        url = base_url + '/daily'
+        url = '%s/daily' % base_url
     elif flavor in daily_live_list:
-        url = base_url + '/daily-live'
+        url = '%s/daily-live' % base_url
     else:
         logging.info('Flavor not valid. Choose from:')
         logging.info('%s', sorted(daily_list + daily_live_list))
@@ -71,13 +59,12 @@ def print_report(url, matches):
     Print full report of releases and what is marked
     as current and pending.
     """
-    current = _request_url(url + '/current/MD5SUMS')
-    pending = _request_url(url + '/pending/MD5SUMS')
+    current = request_url('%s/current/MD5SUMS' % url)
+    pending = request_url('%s/pending/MD5SUMS' % url)
 
     releases = {}
     for release in matches:
-        md5_url = url + '/' + release + '/MD5SUMS'
-        md5 = _request_url(md5_url)
+        md5 = request_url('%s/%s/MD5SUMS' % (url, release))
 
         flags = []
         if md5 == current:
@@ -91,19 +78,19 @@ def print_report(url, matches):
 
     len_url = len(url) + len(max(matches, key=len)) + 2
 
-    for url, flags in sorted(releases.iteritems(), reverse=True):
+    for url, flags in sorted(releases.items()):
         if flags:
             logging.info('%-*s %s', len_url, url, flags)
         else:
             logging.info('%-*s', len_url, url)
 
 
-def main(flavor, release=None, compare=False, verbose=False):
+def main(flavor, release=None, compare=False, debug=False):
     """
     List available daily ISOs.
     """
-    log_level = logging.DEBUG if verbose else logging.INFO
-    logging.getLogger("requests").setLevel(logging.WARNING)
+    log_level = logging.DEBUG if debug else logging.INFO
+    logging.getLogger('requests').setLevel(logging.WARNING)
     logging.basicConfig(stream=sys.stdout, format='%(message)s',
                         level=log_level)
 
@@ -111,7 +98,7 @@ def main(flavor, release=None, compare=False, verbose=False):
     matches = get_daily_releases(url)
 
     if compare:
-        logging.info('%s/%s %s/%s', url, matches[-1], url, matches[-2])
+        logging.info('%s/%s %s/%s', url, matches[-2], url, matches[-1])
     else:
         logging.info('Available Daily ISO List for \'%s\'', flavor)
         logging.info('---')
@@ -127,8 +114,8 @@ if __name__ == '__main__':
                         help='show last two ISOs for comparison')
     PARSER.add_argument('-r', '--release',
                         help='specify a release otherwise development release')
-    PARSER.add_argument('-v', '--verbose', action='store_true',
-                        help='verbose output')
+    PARSER.add_argument('-d', '--debug', action='store_true',
+                        help='debug output')
 
     ARGS = PARSER.parse_args()
-    main(ARGS.flavor, ARGS.release, ARGS.compare, ARGS.verbose)
+    main(ARGS.flavor, ARGS.release, ARGS.compare, ARGS.debug)

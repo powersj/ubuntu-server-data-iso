@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Outputs differences two daily ISO sizes.
 """
@@ -6,19 +6,7 @@ import argparse
 import logging
 import re
 import sys
-import requests
-
-
-def _request_url(url):
-    """
-    Using requests to get a specific URL.
-    """
-    result = requests.get(url)
-    if result.status_code != requests.codes.ok:
-        logging.info('[%s] error getting to URL: %s', result.status_code, url)
-        sys.exit(1)
-
-    return result.text
+from util import request_url
 
 
 def get_iso_sizes(url):
@@ -26,7 +14,7 @@ def get_iso_sizes(url):
     Reviews all the size information for the architechtures.
     """
     architechtures = ['amd64', 'i386', 'arm64', 'powerpc', 'ppc64el', 's390x']
-    text = _request_url(url)
+    text = request_url(url)
 
     sizes = {}
     for arch in architechtures:
@@ -52,11 +40,11 @@ def get_iso_sizes(url):
     return sizes
 
 
-def main(new_url, old_url, verbose=False):
+def main(old_url, new_url, debug=False):
     """
     Print out the size differences in ISOs between two releases.
     """
-    log_level = logging.DEBUG if verbose else logging.INFO
+    log_level = logging.DEBUG if debug else logging.INFO
     logging.getLogger("requests").setLevel(logging.WARNING)
     logging.basicConfig(stream=sys.stdout, format='%(message)s',
                         level=log_level)
@@ -66,12 +54,12 @@ def main(new_url, old_url, verbose=False):
 
     logging.info('Daily ISO Size Diff')
     logging.info('---')
-    logging.info('new: %s', new_url)
     logging.info('old: %s', old_url)
+    logging.info('new: %s', new_url)
     logging.info('---')
     logging.info('        OLD --> NEW [DIFF]')
 
-    for key, new_size in new_sizes.iteritems():
+    for key, new_size in new_sizes.items():
         if key in old_sizes:
             old_size = old_sizes[key]
             diff = float(new_size - old_size)
@@ -84,10 +72,10 @@ def main(new_url, old_url, verbose=False):
 
 if __name__ == '__main__':
     PARSER = argparse.ArgumentParser()
-    PARSER.add_argument('new', help='newer ISO URL for comparison')
     PARSER.add_argument('old', help='older ISO URL for comparison')
-    PARSER.add_argument('-v', '--verbose', action='store_true',
-                        help='verbose output')
+    PARSER.add_argument('new', help='newer ISO URL for comparison')
+    PARSER.add_argument('-d', '--debug', action='store_true',
+                        help='debug output')
 
     ARGS = PARSER.parse_args()
-    main(ARGS.new, ARGS.old, ARGS.verbose)
+    main(ARGS.old, ARGS.new, ARGS.debug)

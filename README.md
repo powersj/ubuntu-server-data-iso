@@ -1,11 +1,20 @@
 # Ubuntu Server Preseed
 A series of scripts to get information about Ubuntu ISOs. Why? "If you have to do it more than twice, automated it!"
 
-## ISO Daily List (iso_daily_list.py)
-Produces a list of available daily ISOs.
+## Daily List (daily_list.py)
+List of available Ubuntu daily ISOs, used by size. Works more than just ubuntu-sever, can use ubutnu, kubuntu, etc.
 
-## ISO Daily Size (iso_daily_size.py)
-Prints out the size difference of the last two daily ISOs per architechture.
+## Daily Size (daily_size.py)
+Determines size difference of the last two daily ISOs by architechture.
 
-## ISO Daily Diff (iso_daily_diff.py)
-TODO: Will produce a size difference, noting the changes in ISOs.
+## Stats (stats.py)
+Produces size numbers and quantities about a particular ISO passed in.
+
+## Manifest (manifest.py)
+Produces manifest of pool with sizing information used for comparison.
+
+## Diff (diff.py)
+Given two manifest, determines updates, removals, and additions.
+
+# TODO
+* How to handle the livefs manifest already on the CD.
