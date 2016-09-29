@@ -92,6 +92,7 @@ def main(filename, debug=False):
     folder = extract(filename)
 
     logging.info('ISO Stats')
+    logging.info('---')
     stats_iso(filename, folder)
     stats_dirs(folder)
     stats_squashfs(os.path.join(folder, 'install'))
